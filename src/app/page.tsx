@@ -1,66 +1,62 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import React, { useState, useEffect } from 'react';
+import styles from "@/app/page.module.css"
+import { useRouter } from 'next/navigation';
+import useUser from '@/hook/useUser';
+import { User } from '@/types/userTypes';
+import LoadingSpinner from '@/component/loading/Loader';
+
+
 
 export default function Home() {
+
+  const [users, setUsers] = useState<User[]>([]);
+
+  const router = useRouter()
+  const { fetchAllUser, loading } = useUser()
+
+  useEffect(() => {
+    fetchAllUser().then(data => { console.log('fetched data', data); setUsers(data) })
+  }, []);
+
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1 className={styles.title}>User List</h1>
+
+      </header>
+
+      <div className={styles.content}>
+        {!loading ? <div className={styles.userGrid}>
+          {users.map(user => (
+            <div
+              key={user.id}
+              onClick={() => router.push(`/user/${user.id}`)}
+              className={styles.userCard}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+              <div className={styles.userAvatar}>
+                {user.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              <div className={styles.userInfo}>
+                <h3 className={styles.userName}>{user.name}</h3>
+                <p className={styles.userUsername}>@{user.username}</p>
+                <p className={styles.userEmail}>{user.email}</p>
+                <div className={styles.companyBadge}>
+                  {user.company.name}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div> :
+
+          <div className={styles.loaderWrapper}>
+
+            <LoadingSpinner size={50} color="#ff6600" />
+          </div>}
+      </div>
+
+
     </div>
   );
-}
+};
