@@ -16,7 +16,7 @@ export default function Home() {
   const { fetchAllUser, loading } = useUser()
 
   useEffect(() => {
-    fetchAllUser().then(data => { console.log('fetched data', data); setUsers(data) })
+    fetchAllUser().then(data => setUsers(data))
   }, []);
 
 
